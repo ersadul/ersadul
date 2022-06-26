@@ -1,5 +1,5 @@
 - 👋 Hi, I’m Ersa Sa'dul 
-- 👀 I’m interested in Data Enginnering and Data Analyst
+- 👀 I’m interested in Data Enginnering
 - 🌱 I’m currently learning ...
 - 💞️ I’m looking to collaborate on ...
 - 📫 How to reach me ig: @ersadul
