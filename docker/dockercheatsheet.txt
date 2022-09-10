@@ -1,0 +1,36 @@
+
+docker cheatsheet
+-----------------
+- docker version		            : check version of docker
+- docker info		                : check docker info, container ,ect.
+- docker pull [image:tag]		    : pull an image from docker registry
+
+- docker images			            : show all list of pulled images 
+- docker image rm [image:tag]		: remove image
+
+- docker container list --all		: show container all existed container
+- docker container ps		        : show running container 
+- docker container create [--name] [name] [-p] [port] image		: create container
+- docker container create [--name] [name] [-p] [port] -e [environmentVar=value] image		: create container with an or some env var 
+- docker container rm [name]		: remove container
+- docker container start [name] [name]	                    	: start a container 
+- docker container stop [name] [name]	            	        : stop a container
+- docker container create [--name] [name] [-p] [port] -v [volumeName:tag(depends on image)] image		: create container which can store data in volume
+
+- docker login		                : login into docker account
+- docker tag [image:tag] [(dockerUsername/)newImage:tag]: make a new container with new tag
+- docker push [image:tag]		    : push an image into docker hub
+- docker build --tag [image:tag]	: create an image
+
+- docker network create [networkName]                   		: create a network
+- docker network connect [networkName] [container]		        : connect container into network
+
+- docker-compose up [-d]		    : run docker-compose file without debugging
+- docker-compose down			    : stop and delete all services in docker-compose
+
+- docker volume create [name]		: create a volume to store data within container
+- docker volume rm [name]		    : remove volume
+
+- docker exec [option] container 	: execution an option into a container
+
+- docker system prune -a --volume 	: remove all containers, images, volumes, networks which unused
