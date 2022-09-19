@@ -173,13 +173,13 @@
 # plt.show()
 
 # # Calculating Values in a Query ( 8 )
-import sqlalchemy as db
-from sqlalchemy import case
+# import sqlalchemy as db
+# from sqlalchemy import case
 
-engine = db.create_engine('sqlite:///census.sqlite')
-conn = engine.connect()
-metadata = db.MetaData()
-census = db.Table('census', metadata, autoload=True, autoload_with=engine)
+# engine = db.create_engine('sqlite:///census.sqlite')
+# conn = engine.connect()
+# metadata = db.MetaData()
+# census = db.Table('census', metadata, autoload=True, autoload_with=engine)
 
 # # Calculating Difference
 # query = db.select([census.columns.age, (census.columns.pop2008 
@@ -216,3 +216,196 @@ census = db.Table('census', metadata, autoload=True, autoload_with=engine)
 # print(conn.execute(query).fetchall())
 
 # # SQL Relationships ( 9 )
+# import sqlalchemy as db
+# engine = db.create_engine('sqlite:///census.sqlite')
+# conn = engine.connect(engine)
+# metadata = db.MetaData()
+# census = db.Table('census', metadata, autoload=True, autoload_with=engine)
+# state_fact = db.Table('state_fact', metadata, autoload=True, autoload_with=engine)
+
+# Automatic Joins - show abbreviation col
+# query = db.select([
+#     census.columns.pop2008, state_fact.columns.abbreviation
+# ])
+# print(conn.execute(query).fetchall()[:10])
+
+# Join table
+# query = db.select([db.func.sum(census.columns.pop2008)])
+# query = query.select_from(census.join(state_fact
+#         , state_fact.columns.name == census.columns.state))
+# query = query.where(state_fact.columns.circuit_court == '10')
+# print(conn.execute(query).scalar())
+
+
+# # Creating Databases and Tables ( 10 )
+# from sqlalchemy import Column, String, Integer, Float, Boolean, Table, insert
+# import sqlalchemy as db
+# engine = db.create_engine('sqlite:///employees.sqlite')
+# metadata = db.MetaData()
+# insp = db.inspect(engine)
+# conn = engine.connect(engine)
+
+# employees = db.Table('employees', metadata,
+#     Column('id', Integer()),
+#     Column('name', String(255), unique=True, nullable=False),
+#     Column('salary', Float(), default=100),
+#     Column('active', Boolean(), default=True),
+# )
+# metadata.create_all(engine)
+# print(insp.get_table_names())
+# print(metadata.tables.values())
+
+
+# # Inserting Data into Table ( 11 )
+# from sqlalchemy import Table, insert
+# import sqlalchemy as db
+# engine = db.create_engine('sqlite:///employees.sqlite')
+# metadata = db.MetaData()
+# conn = engine.connect(engine)
+# employees = db.Table('employees', metadata, autoload=True, autoload_with=engine)
+
+# Inserting One Row
+# query = employees.insert().values(id=1, name='Jason', salary=1.00, active=True)
+# print(conn.execute(query).rowcount)
+
+# Inserting Multiple Rows
+# query = employees.insert()
+# val_list = [
+#     {'id':2, 'name':'Rebecca', 'salary':2.0, 'active':True},
+#     {'id':3, 'name':'Bob', 'salary':0.0, 'active':False}
+# ]
+# result = conn.execute(query, val_list)
+# print(result.rowcount)
+
+# fetch data and show
+# query = db.select([employees])
+# result = conn.execute(query).fetchall()
+# print(*result, sep='\n')
+
+# # Updating Data in Database ( 12 )
+# from sqlalchemy import Table, update, desc
+# import sqlalchemy as db
+# engine = db.create_engine('sqlite:///employees.sqlite')
+# metadata = db.MetaData()
+# conn = engine.connect(engine)
+# employees = db.Table('employees', metadata, autoload=True, autoload_with=engine)
+
+# query = employees.update().where(employees.columns.id == 3) \
+#     .values(active=True)
+# result = conn.execute(query)
+# print(result.rowcount)
+
+# Inserting Multiple Rows
+# query = employees.update().where(employees.columns.active == True) \
+#     .values(active=False, salary=0.00)
+# result = conn.execute(query)
+# print(result.rowcount)
+
+# Correlated Updates
+# new_salary = db.select([employees.columns.salary]).order_by(
+#     desc(employees.columns.salary)).limit(1)
+# query = employees.update().values(salary=new_salary)
+# result = conn.execute(query)
+# print(result.rowcount)
+
+
+# # Removing Data From Database ( 13 )
+# import sqlalchemy as db
+# from sqlalchemy import delete
+# engine = db.create_engine('sqlite:///employees.sqlite')
+# metadata = db.MetaData()
+# conn = engine.connect(engine)
+# employees = db.Table('employees', metadata, autoload=True, autoload_with=engine)
+
+# delete selected data
+# query = employees.delete().where(employees.columns.id == 3)
+# result = conn.execute(query)
+# print(result.rowcount)
+
+# delete all data from a table
+# delete_query = employees.delete()
+# result = conn.execute(delete_query)
+# print(result.rowcount)
+
+# drop a table
+# employees.drop(engine)
+# print(employees.exists(engine))
+
+# drop all the tables
+# metadata.drop_all(engine)
+
+
+# # Populating the Database ( 14 )
+# Study Case: Populating Database
+
+# Create Database and Table
+
+from sqlalchemy import create_engine, MetaData, Table \
+    , Column, Integer, String, insert, select, func
+
+# create engine var
+engine = create_engine('sqlite:///demography.sqlite')
+
+conn = engine.connect() # create connection var
+metadata = MetaData() # create metadata var
+
+# create schema database
+# demography = Table('demography', metadata,
+#     Column('kode_bps', String(255), primary_key=True),
+#     Column('nama', String(255), nullable=False),
+#     Column('ibukota', String(255), nullable=False),
+#     Column('populasi', String(255)),
+#     Column('luas', String(255)),
+#     Column('pulau', String(255), nullable=False)
+# )
+
+metadata.create_all(engine) # create database
+
+demography = Table('demography', metadata, autoload=True, autoload_with=engine)
+# print(engine.table_names())
+
+# Import demography.csv into List
+# import csv
+# values_list = []
+# with open('demography.csv') as data:
+#     next(data)
+#     reader = csv.reader(data)
+#     for row in reader:
+#         data = {'kode_bps':row[0], 'nama':row[1], 'ibukota':row[2]
+#         , 'populasi':row[3], 'luas':row[4], 'pulau':row[5]}
+#         values_list.append(data)
+
+# print(values_list)
+
+# Import List to Table demography
+# query = demography.insert()
+# result = conn.execute(query, values_list)
+# print(result.rowcount)
+
+# Select Data From Table
+# query = demography.select()
+# result = conn.execute(query).fetchall()
+# print(*result, sep='\n')
+
+# Group by Pulau
+query = select([demography.columns.pulau
+, func.sum(func.replace(demography.columns.populasi, '.', '')).label('populasi')])
+query = query.group_by(demography.columns.pulau).order_by(
+    demography.columns.pulau)
+result = conn.execute(query).fetchall()
+# print(*result, sep='\n')
+
+# Change Results Into DataFrame
+import matplotlib.pyplot as plt
+import pandas as pd
+
+df = pd.DataFrame(result)
+df.columns = result[0].keys()
+# print(df)
+
+# Graphing
+df.plot(kind='bar', x='pulau', y='populasi')
+plt.xlabel('Pulau')
+plt.ylabel('Populasi')
+plt.title('Total Populasi di Indonesia')
+plt.show()
