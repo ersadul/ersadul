@@ -114,6 +114,37 @@
 # screen.mainloop()
 
 
+# random pirate and back to the place
+# import random
+
+# tess = turtle.Turtle()
+
+# direc = []
+# step = []
+# step_list = [20, 15, 24, 50, 35, 10]
+# move = 0
+# for i in range(10):
+#     if move == 5:
+#         move = 0
+#     direc.append(random.choice(step_list))
+#     step.append(random.choice(step_list))
+#     tess.left(direc[i])
+#     tess.forward(step[i])
+#     move += 1
+# print(step, direc)
+# direc.reverse()
+# step.reverse()
+# print(step, direc)
+
+# for i in range(10):
+#     if move == 5:
+#         move = 0
+#     tess.back(step[i])
+#     tess.right(direc[i])
+#     move += 1
+
+# turtle.mainloop() 
+
 # 9. If you were going to draw a regular polygon with 18 sides, what angle would you need to turn
 # the turtle at each corner?
 
