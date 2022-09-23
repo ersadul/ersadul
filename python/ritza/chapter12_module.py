@@ -98,10 +98,70 @@ import random
 # print(seqtools.remove_at(4, s))
 
 # # 12.5. Namespaces
-import Module1
-import Module2
+# import Module1
+# import Module2
 
-print(Module1.question)
-print(Module2.question)
-print(Module1.answer)
-print(Module2.answer)
+# print(Module1.question)
+# print(Module2.question)
+# print(Module1.answer)
+# print(Module2.answer)
+
+# def f():
+#     n = 7
+#     print("printing n inside of f:", n)
+
+# def g():
+#     n = 42
+#     print("printing n inside of g:", n)
+
+# n = 11
+# print("printing n before calling f:", n)
+# f()
+# print("printing n after calling f:", n)
+# g()
+# print("printing n after calling g:", n)
+
+
+# # 12.6. Scope and lookup rules
+# def range(n): # var n is local var namespace
+#     return 123*n
+# print(range(10))
+
+# n = 10                # var n is globas var namespace
+# m = 3                 # var m is globas var namespace
+# def f(n):
+#     m = 7             # var m and n here is local var namespace
+#     return 2*n+m      
+# print(f(5), n, m)
+
+# # 12.7. Attributes and the dot operator
+# Variables defined inside a module are called attributes of the module. We’ve seen that objects
+# have attributes too: for example, most objects have a __doc__ attribute, some functions have
+# a __annotations__ attribute. Attributes are accessed using the dot operator (.).
+
+
+# # 12.8. Three import statement variants
+# import math 
+# x = math.sqrt(10)
+# print(x)
+
+# from math import cos, sin, sqrt
+# x = sqrt(10)
+# print(x)
+
+# from math import *  # Import all the identifiers from math,
+#                     # adding them to the current namespace.
+# x = sqrt(10)        # Use them without qualification.
+# print(x)
+
+# import math as m
+# print(m.pi)
+
+# def area(radius):
+#     import math
+#     return math.pi * radius * radius
+# x = math.sqrt(10) # This gives an error
+
+
+# 12.9. Turn your unit tester into a module
+# from unit_tester import test
