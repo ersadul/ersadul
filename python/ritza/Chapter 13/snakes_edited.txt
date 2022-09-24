@@ -1,0 +1,8 @@
+0001 line 1 contain python
+0002 line 2 contain snake
+0003 line 3 contain dog
+0004 line 4 contain cat
+0005 line 5 contain cat that evolve into snake
+line 6 contain cow
+line 7 contain pig
+line 8 contain chicken
