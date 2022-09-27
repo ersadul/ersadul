@@ -81,8 +81,34 @@
 
 
 # 5. Given four points that fall on the circumference of a circle, find the midpoint of the circle. When
-# will this function fail?
-# i skipped this question
+# will this function fail? unfinished
+# class Point:
+
+#     def __init__(self, x=0, y=0):
+#         self.x = x
+#         self.y = y
+
+# def midpoint(p1, p2):
+#     """Return the midpoint of p1 and p2"""
+#     mx = (p1.x + p2.x)/2
+#     my = (p1.y + p2.y)/2
+#     return Point(mx, my)
+
+# def midpoint_circle(a, b, c, d):
+#     # find ab gradient
+#     ab_m = (b.y -a.y) / (b.x - a.x)
+#     mid_ab = midpoint(a, b)
+#     normal_ab_m = -(1/(ab_m))
+    
+#     cd_m = (d.y -c.y) / (d.x - c.x)
+#     mid_cd = midpoint(c, d)
+#     normal_cd_m = -(1/(cd_m))
+
+
+
+
+midpoint_circle(Point(-7, 7), Point(1, 9), Point(3, 1), Point(-7, 1))
+
 
 
 # 6. Create a new class, SMS_store. The class will instantiate SMS_store objects, similar to an inbox
