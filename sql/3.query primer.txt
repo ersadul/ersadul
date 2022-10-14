@@ -1,0 +1,207 @@
+SQL Oreilly
+using sakila database 	
+
+
+3. Query Primer
+## query clauses
+select 	= determines which columns to include in query's result
+from 	= identifies the tables from which to retrive data and how tables should be join
+where 	= filters out unwanted data
+group by= used to group rows
+having 	= filters out unwanted groups
+order by= sorts the rows of the final result set by one or more columns
+
+
+# column aliases 
+mysql> SELECT language_id,
+ -> 'COMMON' language_usage,
+ -> language_id * 3.1415927 lang_pi_value,
+ -> upper(name) language_name
+ -> FROM language;
+
+language_usage, lang_pi_value, language_name we used above is called column aliases
+or we can use 'AS' keyword
+
+mysql> SELECT language_id,
+ -> 'COMMON' AS language_usage,
+ -> language_id * 3.1415927 AS lang_pi_value,
+ -> upper(name) AS language_name
+ -> FROM language;
+
+
+# removing duplicates
+in some cases, a query might return duplicate row of data.
+we can get rid of it by using 'distinct'
+
+this query will show all the row data, but it still contain a duplicate
+mysql> SELECT actor_id FROM film_actor ORDER BY actor_id;
+
+and we can get rid of duplicate by add 'distinct'
+
+
+## The from clause
+# Tables
+While this does describe one type of table, I would like to use the
+word in a more general way by removing any notion of how the data might be stored
+and concentrating on just the set of related rows
+
+• Permanent tables (i.e., created using the create table statement)
+• Derived tables (i.e., rows returned by a subquery and held in memory)
+• Temporary tables (i.e., volatile data held in memory)
+• Virtual tables (i.e., created using the create view statement)
+
+- Derived (subquery-generated) tables
+a subquery is a query contained within another query
+mysql> SELECT concat(cust.last_name, ', ', cust.first_name) full_name
+ -> FROM
+ -> (SELECT first_name, last_name, email
+ -> FROM customer
+ -> WHERE first_name = 'JESSIE'
+ -> ) cust;
+
+
+- Temporary tables
+table that have temporary data row, any data inserted into a temporary table will disappear at some point
+
+mysql> CREATE TEMPORARY TABLE actors_j
+ -> (actor_id smallint(5),
+ -> first_name varchar(45),
+ -> last_name varchar(45)
+ -> );
+
+mysql> INSERT INTO actors_j
+ -> SELECT actor_id, first_name, last_name
+ -> FROM actor
+ -> WHERE last_name LIKE 'J%';
+
+ 
+- Views
+a view is a query that is stored in the data dictionary.
+when the view is created, no additional data is generated or stored:
+the server simply tucks away the select statement for future use
+
+
+# Table Links
+mysql> SELECT customer.first_name, customer.last_name,
+ -> time(rental.rental_date) rental_time
+ -> FROM customer
+ -> INNER JOIN rental
+ -> ON customer.customer_id = rental.customer_id
+ -> WHERE date(rental.rental_date) = '2005-06-14';
+
+
+# Defining Table Aliases
+when multiple tables are joined in a single query,
+ we need to identify every columns we mean to get from table 
+
+we define aliases as char or some word after, tabel name in FROM clause.
+and we can use that in SELECT, ON, WHERE and ect. for reference to that table
+
+SELECT c.first_name, c.last_name,
+ time(r.rental_date) rental_time
+FROM customer c
+ INNER JOIN rental r
+ ON c.customer_id = r.customer_id
+WHERE date(r.rental_date) = '2005-06-14'; 
+
+
+# The where Clause
+The where clause is the mechanism for filtering out unwanted rows from your result set
+
+where AND
+mysql> SELECT title
+ -> FROM film
+ -> WHERE rating = 'G' AND rental_duration >= 7;
+
+where OR 
+mysql> SELECT title
+-> FROM film
+-> WHERE rating = 'G' OR rental_duration >= 7;
+
+where AND, OR
+mysql> SELECT title, rating, rental_duration
+ -> FROM film
+ -> WHERE (rating = 'G' AND rental_duration >= 7)
+ -> OR (rating = 'PG-13' AND rental_duration < 4);
+
+
+# The group by and having Clauses
+using group by to generate groups of rows.
+use having to filter grouped data in same way the where clause.
+
+mysql> SELECT c.first_name, c.last_name, count(*)
+ -> FROM customer c
+ -> INNER JOIN rental r
+ -> ON c.customer_id = r.customer_id
+ -> GROUP BY c.first_name, c.last_name
+ -> HAVING count(*) >= 40;
+ 
+
+# The order by Clause
+The order by clause is the mechanism for sorting your result set using either raw col‐
+umn data or expressions based on column data.
+
+mysql> SELECT c.first_name, c.last_name,
+ -> time(r.rental_date) rental_time
+ -> FROM customer c
+ -> INNER JOIN rental r
+ -> ON c.customer_id = r.customer_id
+ -> WHERE date(r.rental_date) = '2005-06-14'
+ -> ORDER BY c.last_name, c.first_name;
+ 
+ 
+# Ascending Versus Descending Sort Order
+When sorting, you have the option of specifying ascending or descending order via the
+asc and desc keywords. The default is ascending, so you will need to add the desc
+keyword if you want to use a descending sort. 
+
+mysql> SELECT c.first_name, c.last_name,
+ -> time(r.rental_date) rental_time
+ -> FROM customer c
+ -> INNER JOIN rental r
+ -> ON c.customer_id = r.customer_id
+ -> WHERE date(r.rental_date) = '2005-06-14'
+ -> ORDER BY time(r.rental_date) desc;
+ 
+# Sorting via Numeric Placeholders
+we can also order by number of columns, like ORDER BY 1 desc, it means
+order on first column(first_name) by descending
+
+mysql> SELECT c.first_name, c.last_name,
+ -> time(r.rental_date) rental_time
+ -> FROM customer c
+ -> INNER JOIN rental r
+ -> ON c.customer_id = r.customer_id
+ -> WHERE date(r.rental_date) = '2005-06-14'
+ -> ORDER BY 3 desc;
+
+## Exercise 3
+# Exercise 3-1
+MariaDB [sakila]> SELECT actor_id, first_name, last_name
+    -> FROM actor
+    -> ORDER BY last_name, first_name;
+	
+# Exercise 3-2
+alt:
+MariaDB [sakila]> SELECT actor_id, first_name, last_name
+    -> FROM actor
+    -> WHERE last_name = 'WILLIAMS' OR last_name = 'DAVIS';
+alt:	
+mysql> SELECT actor_id, first_name, last_name
+ -> FROM actor
+ -> WHERE last_name IN ('WILLIAMS','DAVIS');
+ 
+# Exercise 3-3
+MariaDB [sakila]> select distinct customer_id
+    -> from rental
+    -> where date(rental_date) = '2005-07-05';
+	
+# Exercise 3-4
+MariaDB [sakila]> SELECT c.email, r.return_date
+    -> from customer c
+    ->  inner join rental r
+    ->  on c.customer_id = r.customer_id
+    -> where date(r.rental_date) = '2005-06-14'
+    -> order by 2 desc;
+	
+

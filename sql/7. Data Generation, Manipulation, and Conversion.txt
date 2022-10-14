@@ -1,0 +1,146 @@
+7. Data Generation, Manipulation, and Conversion
+
+# # Working with String Data
+# String Generation
+simlest way to populate a char column is to enclose a string in quotes
+mysql> INSERT INTO string_tbl (char_fld, vchar_fld, text_fld)
+ -> VALUES ('This is char data',
+ -> 'This is varchar data',
+ -> 'This is text data');
+Query OK, 1 row affected (0.00 sec)
+
+# Including special characters
+mysql> SELECT 'abcdefg', CHAR(97,98,99,100,101,102,103);
+
+mysql> SELECT CHAR(128,129,130,131,132,133,134,135,136,137);
+
+mysql> SELECT CONCAT('danke sch', CHAR(148), 'n');
+
+Using the char(), ascii(), and concat() functions (or concatenation operators),
+you should be able to work with any Roman language even if you are using a key‐
+board that does not include accented or special characters. 
+
+
+# String Manipulation
+- String functions that return numbers
+MariaDB [sakila]> select length('hello_world!');
+
+MariaDB [sakila]> select name, name like '%y' ends_in_y
+    -> from category;
+
+- String functions that return strings
+mysql> DELETE FROM string_tbl;
+Query OK, 5 rows affected (0.00 sec)
+
+mysql> INSERT INTO string_tbl (text_fld)
+ -> VALUES ('This string was 29 characters');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> UPDATE string_tbl
+ -> SET text_fld = CONCAT(text_fld, ', but now it is longer');
+Query OK, 1 row affected (0.03 sec)
+Rows matched: 1 Changed: 1 Warnings: 0
+
+MariaDB [sakila]> select concat(first_name, ' ', last_name, ' has been a customer since ', date(create_date)) cust_narrative
+ from customer 
+ limit 10;
+
+
+# # Working with Numeric Data
+MariaDB [sakila]> SELECT (37 * 59) / (78 - (8 * 6));
+
+# Controlling Number Precision
+
+round up or down the closest integer
+mysql> SELECT CEIL(72.445), FLOOR(72.445);
+mysql> SELECT CEIL(72.000000001), FLOOR(72.999999999);
+
+mysql> SELECT ROUND(72.49999), ROUND(72.5), ROUND(72.50001);
+mysql> SELECT ROUND(72.0909, 1), ROUND(72.0909, 2), ROUND(72.0909, 3);
+
+mysql> SELECT ROUND(17, −1), TRUNCATE(17, −1);
+
+# Handling Signed Data
+mysql> SELECT account_id, SIGN(balance), ABS(balance)
+ -> FROM account;
++------------+---------------+--------------+
+| account_id | SIGN(balance) | ABS(balance) |
++------------+---------------+--------------+
+| 123 | 1 | 785.22 |
+| 456 | 0 | 0.00 |
+| 789 | -1 | 324.22 |
++------------+---------------+--------------+
+
+
+# # Working with Temporal Data
+exmp of temporal data:
+• Wednesday, June 5, 2019
+• 6/05/2019 2:14:56 P.M. EST
+• 6/05/2019 19:14:56 GMT
+• 1562019 (Julian format)
+• Star date [−4] 97026.79 14:14:56 (Star Trek format)
+
+- Generating Temporal Data
+cast() function to cast something 
+exmp: SELECT CAST("2017-08-29" AS DATE);
+
+str_to_date() function to pull the string 'September 17, 2019' from a file 
+and need to use it to update a date column
+exmp:
+UPDATE rental
+SET return_date = STR_TO_DATE('September 17, 2019', '%M %d, %Y')
+WHERE rental_id = 99999;
+
+to show the current date
+mysql> SELECT CURRENT_DATE(), CURRENT_TIME(), CURRENT_TIMESTAMP();
+
+
+- Manipulating Temporal Data
+to show the current date and add the some interval
+mysql> SELECT DATE_ADD(CURRENT_DATE(), INTERVAL 5 DAY);
+
+show the last day of the month
+mysql> SELECT LAST_DAY('2019-09-17');
+
+
+- Temporal functions that return strings
+extract dayname from date
+mysql> SELECT DAYNAME('2019-09-18');
+
+extract year value
+MariaDB [sakila]> select extract(year from '2018-02-01');
+
+
+- Temporal functions that return numbers
+extract the different between 2 dates
+mysql> SELECT DATEDIFF('2019-09-03', '2019-06-21');
+
+
+# # Conversion Functions
+To use cast(), you provide a value or expression, the as keyword, and the type to
+which you want the value converted. Here’s an example that converts a string to an
+integer:
+mysql> SELECT CAST('1456328' AS SIGNED INTEGER);
+
+
+# # Exercise 7
+# Exercise 7-1
+Write a query that returns the 17th through 25th characters of the string 'Please
+find the substring in this string'.
+
+MariaDB [sakila]> select substring('Please find the substring in this string', 17, 25);
+
+
+# Exercise 7-2
+Write a query that returns the absolute value and sign (−1, 0, or 1) of the number
+−25.76823. Also return the number rounded to the nearest hundredth.
+mine:
+MariaDB [sakila]> select abs(−25.76823), truncate(−25.76823, -1), round(−25.76823, -2);
+
+solution:
+MariaDB [sakila]> select abs(−25.76823), sign(−25.76823), round(−25.76823, -2);
+
+# Exercise 7-3
+Write a query to return just the month portion of the current date.
+
+MariaDB [sakila]> select extract(month FROM CURRENT_DATE());

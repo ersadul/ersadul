@@ -34,3 +34,6 @@ docker cheatsheet
 - docker exec [option] container 	: execution an option into a container
 
 - docker system prune -a --volume 	: remove all containers, images, volumes, networks which unused
+
+Note:
+The -d option tells Docker to run the Container as a Service

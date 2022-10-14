@@ -1,0 +1,338 @@
+9. Subqueries
+
+# # What Is a Subquery? 161
+ a subquery returns a result set that may consist of:
+• A single row with a single column
+• Multiple rows with a single column
+• Multiple rows having multiple columns
+
+MariaDB [sakila]> select customer_id, first_name, last_name
+    -> from customer
+    -> where customer_id = (select max(customer_id) from customer);
+
+
+
+# # Subquery Types 163
+
+
+
+# # Noncorrelated Subqueries 163
+ This type of subquery is
+known as a scalar subquery and can appear on either side of a condition using the
+usual operators (=, <>, <, >, <=, >=)
+
+mysql> SELECT city_id, city
+ -> FROM city
+ -> WHERE country_id <> 
+ -> (SELECT country_id FROM country WHERE country = 'India');
+ 
+ if the expression return more that 1 row it will raise an error
+ mysql> SELECT city_id, city
+ -> FROM city
+ -> WHERE country_id <> 
+ -> (SELECT country_id FROM country WHERE country <> 'India');
+ERROR 1242 (21000): Subquery returns more than 1 row
+
+
+# Multiple-Row, Single-Column Subqueries 164
+- The in and not in operators
+mysql> SELECT country_id
+ -> FROM country
+ -> WHERE country IN ('Canada','Mexico');
+
+MariaDB [sakila]> select city_id, city
+    -> from city
+    -> where country_id in (select country_id from country where country in('Canada', 'Mexico'));
+
+MariaDB [sakila]> select city_id, city
+    -> from city
+    -> where country_id not in (select country_id from country where country in('Canada', 'Mexico'));
+
+- The all operator
+the all operator allows you to make comparisons between a single
+value and every value in a set.
+
+> The ALL operator:
+returns a boolean value as a result
+returns TRUE if ALL of the subquery values meet the condition
+is used with SELECT, WHERE and HAVING statements
+
+mysql> SELECT first_name, last_name
+ -> FROM customer
+ -> WHERE customer_id <> ALL
+ -> (SELECT customer_id
+ -> FROM payment
+ -> WHERE amount = 0);
+
+we can do it in easier way to understand, to show the result exact same as above
+MariaDB [sakila]> SELECT first_name, last_name
+    -> FROM customer
+    -> WHERE customer_id NOT IN
+    ->  (SELECT customer_id
+    ->  FROM payment
+    ->  WHERE amount = 0);
+
+MariaDB [sakila]> SELECT customer_id, count(*)
+    -> from rental
+    -> group by customer_id
+    -> having count(*) > all
+    -> (select count(*)
+    -> from rental r
+    -> inner join customer c
+    -> on r.customer_id = c.customer_id
+    -> inner join address a
+    -> on c.address_id = a.address_id
+    -> inner join city ct
+    -> on a.city_id = ct.city_id
+    -> inner join country co
+    -> on ct.country_id = co.country_id
+    -> where co.country in ('United States', 'Mexico', 'Canada')
+    -> group by r.customer_id);
+
+- The any operator
+Like the all operator, the any operator allows a value to be compared to the members
+of a set of values; unlike all, however, a condition using the any operator evaluates to
+true as soon as a single comparison is favorable.
+
+> The ANY operator:
+returns a boolean value as a result
+returns TRUE if ANY of the subquery values meet the condition
+
+MariaDB [sakila]> select customer_id, sum(amount)
+    -> from payment
+    -> group by customer_id
+    -> having sum(amount) > any
+    -> (select sum(p.amount)
+    -> from payment p
+    -> inner join customer c
+    -> on p.customer_id = c.customer_id
+    -> inner join address a
+    -> on c.address_id = a.address_id
+    -> inner join city ct
+    -> on a.city_id = ct.city_id
+    -> inner join country co
+    -> on ct.country_id = co.country_id
+    -> where co.country in ('Bolivia', 'Paraguay', 'Chile')
+    -> group by co.country);
+	
+	
+# Multicolumn Subqueries 169
+MariaDB [sakila]> select fa.actor_id, fa.film_id
+    -> from film_actor fa
+    -> where fa.actor_id in (select actor_id from actor where last_name = 'MONROE')
+    -> and fa.film_id in (SELECT film_id from film where rating = 'PG');
+	
+MariaDB [sakila]> select actor_id, film_id
+    -> from film_actor
+    -> where (actor_id, film_id) in
+    -> (select a.actor_id, f.film_id
+    -> from actor a
+    -> cross join film f
+    -> where a.last_name = 'MONROE' and f.rating = 'PG');
+
+
+
+# # Correlated Subqueries 171
+Unlike a noncorrelated subquery, a correlated subquery 
+is not executed once prior to execution of the containing statement
+the correlated subquery is executed once for each candidate row 
+(rows that might be included in the final results)
+
+MariaDB [sakila]> select c.first_name, c.last_name
+    -> from customer c
+    -> where 20 =
+    -> (select count(*) from rental r where r.customer_id = c.customer_id);
+
+MariaDB [sakila]> select c.first_name, c.last_name
+    -> from customer c
+    -> where
+    -> (select sum(p.amount) from payment p
+    -> where p.customer_id = c.customer_id)
+    -> between 180 and 240;
+
+
+# The exists Operator 173
+
+this query is how the customer that rented a film before 2005-05-25
+MariaDB [sakila]> select c.first_name, c.last_name
+    -> from customer c
+    -> where exists
+    -> (select 1 from rental r
+    -> where r.customer_id = c.customer_id
+    -> and date(r.rental_date) < '2005-05-25');
+
+
+This query finds all actors who have never appeared in an R-rated film.
+MariaDB [sakila]> select a.first_name, a.last_name
+    -> from actor a
+    -> where not exists
+    -> (select 1 from film_actor fa
+    -> inner join film f on f.film_id = fa.film_id
+    -> where fa.actor_id = a.actor_id
+    -> and f.rating = 'R');
+
+
+# Data Manipulation Using Correlated Subqueries 174
+
+
+# # When to Use Subqueries 175
+# Subqueries as Data Sources 176
+we can use return from subquery as a data source
+
+MariaDB [sakila]> select c.first_name, c.last_name, p.num_rentals, p.tot_payments
+    -> from customer c
+    -> inner join
+    -> (select customer_id, count(*) num_rentals, sum(amount) tot_payments
+    -> from payment
+    -> group by customer_id) p
+    -> on c.customer_id = p.customer_id;
+
+- Data fabrication
+you can use subqueries to
+generate data that doesn’t exist in any form within your database.
+
+MariaDB [sakila]> SELECT 'Small Fry' name, 0 low_limit, 74.99 high_limit
+    -> union all
+    -> SELECT 'Average Joes' name, 75 low_limit, 149.99 high_limit
+    -> union all
+    -> SELECT 'Heavy Hitters' name, 150 low_limit, 9999999.99 high_limit;
+	
+MariaDB [sakila]> select pg.name, count(*) num_customers
+    -> from
+    -> (select customer_id, count(*) num_rentals, sum(amount) tot_payments
+    -> from payment
+    -> group by customer_id) p
+    -> inner join
+    ->  (SELECT 'Small Fry' name, 0 low_limit, 74.99 high_limit
+    -> union all
+    -> SELECT 'Average Joes' name, 75 low_limit, 149.99 high_limit
+    -> union all
+    -> SELECT 'Heavy Hitters' name, 150 low_limit, 9999999.99 high_limit) pg
+    -> on p.tot_payments between pg.low_limit and pg.high_limit
+    -> group by pg.name;
+
+- Task-oriented subqueries
+MariaDB [sakila]> select c.first_name, c.last_name, ct.city, sum(p.amount), count(*) tot_rentals
+    -> from payment p
+    -> inner join customer c
+    -> on p.customer_id = c.customer_id
+    -> inner join address a
+    -> on c.address_id = a.address_id
+    -> inner join city ct
+    -> on a.city_id = ct.city_id
+    -> group by c.first_name, c.last_name, ct.city;
+
+MariaDB [sakila]> select customer_id, count(*) tot_rentals, sum(amount) tot_payments
+    -> from payment
+    -> group by customer_id;	
+
+MariaDB [sakila]> select c.first_name, c.last_name, ct.city, p.tot_payments, p.tot_rentals
+    -> from
+    -> (select customer_id, count(*) tot_rentals, sum(amount) tot_payments from payment group by customer_id) p
+    -> inner join customer c
+    -> on p.customer_id = c.customer_id
+    -> inner join address a
+    -> on c.address_id = a.address_id
+    -> inner join city ct
+    -> on a.city_id = ct.city_id;
+
+
+# Subqueries as Expression Generators 182
+mysql> SELECT
+ -> (SELECT c.first_name FROM customer c
+ -> WHERE c.customer_id = p.customer_id
+ -> ) first_name,
+ -> (SELECT c.last_name FROM customer c
+ -> WHERE c.customer_id = p.customer_id
+ -> ) last_name,
+ -> (SELECT ct.city
+ -> FROM customer c
+ -> INNER JOIN address a
+ -> ON c.address_id = a.address_id
+ -> INNER JOIN city ct
+ -> ON a.city_id = ct.city_id
+ -> WHERE c.customer_id = p.customer_id
+ -> ) city,
+ -> sum(p.amount) tot_payments,
+ -> count(*) tot_rentals
+ -> FROM payment p
+ -> GROUP BY p.customer_id;
+
+
+MariaDB [sakila]> select
+    -> (select c.first_name from customer c where c.customer_id = p.customer_id) first_name,
+    -> (select c.last_name from customer c where c.customer_id = p.customer_id) last_name,
+    -> (select ct.city from customer c inner join address a on c.address_id = a.address_id
+    -> inner join city ct
+    -> on a.city_id = ct.city_id where c.customer_id = p.customer_id) city,
+    -> sum(p.amount) tot_payments,
+    -> count(*) tot_rentals
+    -> from payment p
+    -> group by p.customer_id;
+	
+	
+# # Subquery Wrap-Up 184
+
+
+# # Test Your Knowledge 185
+# Exercise 9-1
+Construct a query against the film table that uses a filter condition with a noncorre‐
+lated subquery against the category table to find all action films (category.name =
+'Action').
+
+this query is wrong based on context(subquery), but the result is true
+MariaDB [sakila]> select f.title
+    -> from film f
+    -> inner join film_category fc
+    -> on f.film_id = fc.film_id
+    -> inner join category c
+    -> on c.category_id = fc.category_id
+    -> where c.name = 'Action';
+
+remake:	
+MariaDB [sakila]> select title
+    -> from film
+    -> where film_id in
+    -> (select fa.film_id
+    -> from film_category fc inner join category c
+    -> on fc.category_id = c.category_id
+    -> where c.name = 'Action');
+
+	
+# Exercise 9-2
+Rework the query from Exercise 9-1 using a correlated subquery against the category
+and film_category tables to achieve the same results.
+
+MariaDB [sakila]> select f.title
+    -> from film f
+    -> where
+    -> (select 1 from film_category fc
+    -> inner join category c
+    -> on fc.category_id = c.category_id
+    -> where fc.film_id = f.film_id and c.name = 'Action');
+	
+# Exercise 9-3
+Join the following query to a subquery against the film_actor table to show the level
+of each actor:
+SELECT 'Hollywood Star' level, 30 min_roles, 99999 max_roles
+UNION ALL
+SELECT 'Prolific Actor' level, 20 min_roles, 29 max_roles
+UNION ALL
+SELECT 'Newcomer' level, 1 min_roles, 19 max_roles
+The subquery against the film_actor table should count the number of rows for each
+actor using group by actor_id, and the count should be compared to the
+min_roles/max_roles columns to determine which level each actor belongs to
+
+MariaDB [sakila]> select fa.actor_id, la.level
+    -> from
+    -> (select actor_id, count(*) num_film
+    -> from film_actor
+    -> group by actor_id) fa
+    -> inner join
+    -> (SELECT 'Hollywood Star' level, 30 min_roles, 99999 max_roles
+    -> UNION ALL
+    -> SELECT 'Prolific Actor' level, 20 min_roles, 29 max_roles
+    -> UNION ALL
+    -> SELECT 'Newcomer' level, 1 min_roles, 19 max_roles) la
+    -> on num_film between la.min_roles and la.max_roles
+    -> group by actor_id;

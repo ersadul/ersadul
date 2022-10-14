@@ -1,0 +1,186 @@
+
+4. Filtering
+# # Condition Evaluation
+# Using Parentheses
+if we using three or more condition using AND and OR operator, we should 
+use parentheses to make our intent clear
+
+exmp:
+WHERE (first_name = 'STEVEN' OR last_name = 'YOUNG')
+ AND create_date > '2006-01-01'
+
+
+# Using the not Operator
+we can add NOT operator before the set of condition
+to inverse the result of condition
+
+exmp:
+WHERE NOT (first_name = 'STEVEN' OR last_name = 'YOUNG')
+ AND create_date > '2006-01-01'
+ 
+
+# # Building a Condition
+we can build a condition from an expressions and combined with 
+one or more operators. an expressions can be any of the following:
+• A number
+• A column in a table or view
+• A string literal, such as 'Maple Street'
+• A built-in function, such as concat('Learning', ' ', 'SQL')
+• A subquery
+• A list of expressions, such as ('Boston', 'New York', 'Chicago')
+
+The operators used within conditions include:
+• Comparison operators, such as =, !=, <, >, <>, like, in, and between
+• Arithmetic operators, such as +, −, *, and /
+
+# # Condition Types
+# Equality Conditions
+A large percentage of the filter conditions that you write or come across will be of the
+form 'column = expression' as in:
+title = 'RIVER OUTLAW'
+fed_id = '111-11-1111'
+amount = 375.25
+film_id = (SELECT film_id FROM film WHERE title = 'RIVER OUTLAW')
+
+- Inequality conditions
+When building inequality conditions, you may choose to use either 
+the != or <> operator.
+mysql> SELECT c.email
+ -> FROM customer c
+ -> INNER JOIN rental r
+ -> ON c.customer_id = r.customer_id
+ -> WHERE date(r.rental_date) <> '2005-06-14';
+
+- Data modification using equality conditions
+DELETE FROM rental
+WHERE year(rental_date) = 2004;
+
+DELETE FROM rental
+WHERE year(rental_date) <> 2005 AND year(rental_date) <> 2006;
+
+
+# Range Conditions
+mysql> SELECT customer_id, rental_date
+ -> FROM rental
+ -> WHERE rental_date < '2005-05-25';
+
+mysql> SELECT customer_id, rental_date
+ -> FROM rental
+ -> WHERE rental_date <= '2005-06-16'
+ -> AND rental_date >= '2005-06-14';
+ 
+- The between operator
+in the between operator, we must specify the lower limit first and the upper limit after that.
+
+a. number case/range
+mysql> SELECT customer_id, rental_date
+ -> FROM rental
+ -> WHERE rental_date BETWEEN '2005-06-14' AND '2005-06-16';
+
+if we define the upper limit first, it will return empty set
+mysql> SELECT customer_id, rental_date
+ -> FROM rental
+ -> WHERE rental_date BETWEEN '2005-06-16' AND '2005-06-14';
+Empty set (0.00 sec)
+
+b. String ranges
+we can also build conditions that search for ranges of strings
+mysql> SELECT last_name, first_name
+ -> FROM customer
+ -> WHERE last_name BETWEEN 'FA' AND 'FR';
+
+
+# Membership Conditions
+we can filter out the result by build an expressions of its 
+value that exist in the column, or we can call it membership condition
+
+alt:
+mysql> SELECT title, rating
+ -> FROM film
+ -> WHERE rating = 'G' OR rating = 'PG';
+
+alt:
+SELECT title, rating
+FROM film
+WHERE rating IN ('G','PG')
+
+- Using subqueries
+mysql> SELECT title, rating
+ -> FROM film
+ -> WHERE rating IN (SELECT rating FROM film WHERE title LIKE '%PET%');
+ 
+- Using not in
+SELECT title, rating
+FROM film
+WHERE rating NOT IN ('PG-13','R', 'NC-17');
+
+
+# # Matching Conditions
+mysql> SELECT last_name, first_name
+ -> FROM customer
+ -> WHERE left(last_name, 1) = 'Q';
+
+- Using wildcards
+• Strings beginning/ending with a certain character
+• Strings beginning/ending with a substring
+• Strings containing a certain character anywhere within the string
+• Strings containing a substring anywhere within the string
+• Strings with a specific format, regardless of individual characters
+
+_: exacly one character
+%: any number of characters (including 0)
+
+exmp:
+MariaDB [sakila]> select last_name, first_name
+    -> from customer
+    -> where last_name like '_A_T%S';
+	
+sample search expressions
+F%:	 	 Strings beginning with F
+%t:		 Strings ending with t
+%bas%:	 Strings containing the substring 'bas'
+_ _t_:	 Four-character strings with a t in the third position
+_ _ _-_ _-_ _ _ _: 11-character strings with dashes in the fourth and seventh positions
+
+exmp:
+MariaDB [sakila]> select last_name, first_name
+    -> from customer
+    -> where last_name like 'Q%' OR last_name like "Y%";
+	
+	
+# # Null: That Four-Letter Word
+null is a bit slippery, however, as there are vari‐
+ous flavors of null:
+• Not applicable
+• Value not yet known
+• Value undefined
+
+exmp:
+MariaDB [sakila]> select rental_id, customer_id
+    -> from rental
+    -> where return_date IS NULL;
+	
+# # Exercise
+# Exercise 4-1
+MariaDB [sakila]> select payment_id
+    -> from payment
+    -> where customer_id <> 5 AND (amount > 8 OR date(payment_date) = '2005-08-23');
+	
+	
+# Exercise 4-2
+MariaDB [sakila]> select payment_id
+    -> from payment
+    -> where customer_id = 5 AND NOT (amount > 6 OR date(payment_date) = '2005-06-19');
+	
+	
+# Exercise 4-3
+MariaDB [sakila]> select amount
+    -> from payment
+    -> where amount in (1.98, 7.98, 9.98);
+	
+
+# Exercise 4-4
+MariaDB [sakila]> select first_name, last_name
+    -> from customer
+    -> where last_name like '_A%W';
+	
