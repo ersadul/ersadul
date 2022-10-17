@@ -13,7 +13,7 @@ py app.py
 but if there is not available dependencies, you must install it first. list of dependency in requirement.txt file. You can create virtual environment to isolate dependency between your app and main OS. 
 
 ```sh
-py -m venv env
+py -m venv .venv
 .venv/Scripts/activate
 ```
 > Note: `.venv/Scripts/activate` (windows), `source .venv/bin/activate` (mac) to enter virtual env
