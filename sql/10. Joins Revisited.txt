@@ -1,0 +1,188 @@
+10. Joins Revisited
+
+# # Outer Joins 187
+mysql> SELECT f.film_id, f.title, count(*) num_copies
+ -> FROM film f
+ -> INNER JOIN inventory i
+ -> ON f.film_id = i.film_id
+ -> GROUP BY f.film_id, f.title;
+
+
+mysql> SELECT f.film_id, f.title, count(i.inventory_id) num_copies
+ -> FROM film f
+ -> LEFT OUTER JOIN inventory i
+ -> ON f.film_id = i.film_id
+ -> GROUP BY f.film_id, f.title;
+
+• The join definition was changed from inner to left outer, which instructs the
+server to include all rows from the table on the left side of the join (film, in this
+case) and then include columns from the table on the right side of the join (inven
+tory) if the join is successful.
+• The num_copies column definition was changed from count(*) to
+count(i.inventory_id), which will count the number of non-null values of the
+inventory.inventory_id column.
+
+
+MariaDB [sakila]> select f.film_id, f.title, i.inventory_id
+    -> from film f
+    -> inner join inventory i
+    -> on f.film_id = i.film_id
+    -> where f.film_id between 13 and 15;
+	
+MariaDB [sakila]> select f.film_id, f.title, i.inventory_id
+    -> from film f
+    -> left outer join inventory i
+    -> on f.film_id = i.film_id
+    -> where f.film_id between 13 and 15;
+
+
+# Left Versus Right Outer Joins 190
+MariaDB [sakila]> select f.film_id, f.title, i.inventory_id
+    -> from inventory i
+    -> right join film f
+    -> on f.film_id = i.film_id
+    -> where f.film_id between 13 and 15;
+
+
+# Three-Way Outer Joins 191
+MariaDB [sakila]> select f.film_id, f.title, i.inventory_id, r.rental_date
+    -> from film f
+    -> left join inventory i
+    -> on f.film_id = i.film_id
+    -> left join rental r
+    -> on i.inventory_id = r.inventory_id
+    -> where f.film_id between 13 and 15;
+
+
+# # Cross Joins 192
+MariaDB [sakila]> select c.name category_name, l.name language_name
+    -> from category c
+    -> cross join language l
+
+mysql> SELECT ones.num + tens.num + hundreds.num
+ -> FROM
+ -> (SELECT 0 num UNION ALL
+ -> SELECT 1 num UNION ALL
+ -> SELECT 2 num UNION ALL
+ -> SELECT 3 num UNION ALL
+ -> SELECT 4 num UNION ALL
+ -> SELECT 5 num UNION ALL
+ -> SELECT 6 num UNION ALL
+ -> SELECT 7 num UNION ALL
+ -> SELECT 8 num UNION ALL
+ -> SELECT 9 num) ones
+ -> CROSS JOIN
+ -> (SELECT 0 num UNION ALL
+ -> SELECT 10 num UNION ALL
+ -> SELECT 20 num UNION ALL
+ -> SELECT 30 num UNION ALL
+ -> SELECT 40 num UNION ALL
+ -> SELECT 50 num UNION ALL
+ -> SELECT 60 num UNION ALL
+ -> SELECT 70 num UNION ALL
+ -> SELECT 80 num UNION ALL
+ -> SELECT 90 num) tens
+ -> CROSS JOIN
+ -> (SELECT 0 num UNION ALL
+ -> SELECT 100 num UNION ALL
+ -> SELECT 200 num UNION ALL
+ -> SELECT 300 num) hundreds;
+
+mysql> SELECT DATE_ADD('2020-01-01',
+ -> INTERVAL (ones.num + tens.num + hundreds.num) DAY) dt
+ -> FROM
+ -> (SELECT 0 num UNION ALL
+ -> SELECT 1 num UNION ALL
+ -> SELECT 2 num UNION ALL
+ -> SELECT 3 num UNION ALL
+ -> SELECT 4 num UNION ALL
+ -> SELECT 5 num UNION ALL
+ -> SELECT 6 num UNION ALL
+ -> SELECT 7 num UNION ALL
+ -> SELECT 8 num UNION ALL
+ -> SELECT 9 num) ones
+ -> CROSS JOIN
+ -> (SELECT 0 num UNION ALL
+ -> SELECT 10 num UNION ALL
+ -> SELECT 20 num UNION ALL
+ -> SELECT 30 num UNION ALL
+ -> SELECT 40 num UNION ALL
+ -> SELECT 50 num UNION ALL
+ -> SELECT 60 num UNION ALL
+ -> SELECT 70 num UNION ALL
+ -> SELECT 80 num UNION ALL
+ -> SELECT 90 num) tens
+ -> CROSS JOIN
+ -> (SELECT 0 num UNION ALL
+ -> SELECT 100 num UNION ALL
+ -> SELECT 200 num UNION ALL
+ -> SELECT 300 num) hundreds
+ -> WHERE DATE_ADD('2020-01-01',
+ -> INTERVAL (ones.num + tens.num + hundreds.num) DAY) < '2021-01-01'
+ -> ORDER BY 1;
+
+
+# # Natural Joins 198
+mysql> SELECT c.first_name, c.last_name, date(r.rental_date)
+ -> FROM customer c
+ -> NATURAL JOIN rental r;
+Empty set (0.04 sec)
+
+
+mysql> SELECT cust.first_name, cust.last_name, date(r.rental_date)
+ -> FROM
+ -> (SELECT customer_id, first_name, last_name
+ -> FROM customer
+ -> ) cust
+ -> NATURAL JOIN rental r;
+
+
+
+# # Test Your Knowledge 199
+Exercise 10-1
+Using the following table definitions and data, write a query that returns each cus‐
+tomer name along with their total payments:
+mysql> SELECT c.name, sum(p.amount)
+ -> FROM customer c LEFT OUTER JOIN payment p
+ -> ON c.customer_id = p.customer_id
+ -> GROUP BY c.name;
+ 
+
+Exercise 10-2
+Reformulate your query from Exercise 10-1 to use the other outer join type (e.g., if
+you used a left outer join in Exercise 10-1, use a right outer join this time) such that
+the results are identical to Exercise 10-1.
+MySQL> SELECT c.name, sum(p.amount)
+ -> FROM payment p RIGHT OUTER JOIN customer c
+ -> ON c.customer_id = p.customer_id
+ -> GROUP BY c.name;
+
+
+Exercise 10-3 (Extra Credit)
+Devise a query that will generate the set {1, 2, 3, ..., 99, 100}. (Hint: use a cross join
+with at least two from clause subqueries.)
+
+MariaDB [sakila]> select (ones.num + tens.num + 1)
+    -> from
+    -> (SELECT 0 num UNION ALL
+    -> SELECT 1 num UNION ALL
+    -> SELECT 2 num UNION ALL
+    -> SELECT 3 num UNION ALL
+    ->
+    -> SELECT 4 num UNION ALL
+    -> SELECT 5 num UNION ALL
+    -> SELECT 6 num UNION ALL
+    -> SELECT 7 num UNION ALL
+    -> SELECT 8 num UNION ALL
+    -> SELECT 9 num) ones
+    -> cross join
+    -> (SELECT 0 num UNION ALL
+    -> SELECT 10 num UNION ALL
+    -> SELECT 20 num UNION ALL
+    -> SELECT 30 num UNION ALL
+    -> SELECT 40 num UNION ALL
+    -> SELECT 50 num UNION ALL
+    -> SELECT 60 num UNION ALL
+    -> SELECT 70 num UNION ALL
+    -> SELECT 80 num UNION ALL
+    -> SELECT 90 num ) tens;
