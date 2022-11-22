@@ -1,0 +1,35 @@
+Question 1
+How does data flow through pipelines?
+Data packets
+
+Which of the following pipeline monitoring considerations affects the amount of data that passes through the pipeline over time?
+Throughput
+
+Question 3
+Which of the following data pipelines corresponds with the fraud detection use case?
+Streaming data pipeline
+
+Which streaming data pipeline tool allows you to build applications using the Streams Processing Language (SPL)?
+IBM Streams
+
+Question 5
+Pipelines that incorporate parallelism are referred to as being_____ ?
+Dynamic or non-linear
+
+Question 6
+Batch data pipelines usually run periodically on fixed schedules. Which of the following is another method to run these?
+Triggers
+
+Question 7
+Which of the following common features of modern ETL and ELT products is known as "no-code"?
+Drag-and-drop
+
+Which of the following data pipeline use cases is the simplest?
+File backup
+
+Latency is the total time it takes for a single packet of data to pass through the pipeline. Which of the following limits latency?
+Slowest process
+
+Question 10
+Micro-batch data pipelines decrease the batch size. Which of the following do micro-batch pipelines increase?
+Batch process refresh rate

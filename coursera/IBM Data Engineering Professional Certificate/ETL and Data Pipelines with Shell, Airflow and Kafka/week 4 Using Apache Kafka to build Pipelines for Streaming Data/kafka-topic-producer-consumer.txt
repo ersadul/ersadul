@@ -1,0 +1,27 @@
+# download kafka
+wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.12-2.8.0.tgz
+
+#extract file
+tar -xzf kafka_2.12-2.8.0.tgz
+
+# start zookeeper to organize broker in kafka 
+cd kafka_2.12-2.8.0
+bin/zookeeper-server-start.sh config/zookeeper.properties
+
+# start kafka server 
+cd kafka_2.12-2.8.0
+bin/kafka-server-start.sh config/server.properties
+
+# create topic 
+cd kafka_2.12-2.8.0
+bin/kafka-topics.sh --create --topic news --bootstrap-server localhost:9092
+
+# open producer console with selected topic
+# if we enter some message within console, it will publish in selected topic
+bin/kafka-console-producer.sh --topic news --bootstrap-server localhost:9092
+
+# open consumer console with selected topic
+# if we not specify tag --from-beginning, consumer will read nothing until producer publish a message
+# if we specify the tag, it will read message from beginning
+cd kafka_2.12-2.8.0
+bin/kafka-console-consumer.sh --topic news --from-beginning --bootstrap-server localhost:9092

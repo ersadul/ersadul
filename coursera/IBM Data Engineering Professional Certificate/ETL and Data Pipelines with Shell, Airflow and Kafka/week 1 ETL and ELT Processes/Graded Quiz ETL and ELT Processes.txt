@@ -1,0 +1,33 @@
+ETL process consists of Extract > Transform > Load. Which of these three processes is also known as data wrangling? 
+Transform
+
+Question 2
+The ELT process has no information loss. What is the main reason for this benefit?
+Data replication
+
+Question 3
+ETL processes include a storage facility called a staging area. In ELT the staging area fits the description of what?
+Data lake
+
+Question 4
+Which of the following pain points does ELT address?
+Challenges imposed by Big Data
+
+There are many techniques for extracting data. Choosing the technique usually depends on what?
+Intended use
+
+Question 6
+Extracting data from IoT devices involves large volumes of redundant data. What is used to decrease the data volume of redundant data and only extract features of interest from raw data?
+Edge computing
+
+ETL uses the schema-on-write approach and ELT uses the schema-on-read approach. What is the biggest difference in these two approaches?
+Limited versatility vs. versatility
+
+Which of the following examples of information loss during transformation can involve false negatives?
+Edge computing
+
+Which of the following loading techniques is between batch and stream loading?
+Micro-batch loading
+
+Which of the following loading techniques can split a single file into smaller chunks?
+Parallel loading

@@ -1,0 +1,36 @@
+ESPs are a middle layer between multiple event sources and destinations. ESPs may have different architectures and components but also some common components. Which of the following common components receives and consumes events?
+event broker
+
+The core component of any ESP is the event broker. Which event broker sub-component performs encryption on data?
+Processor
+
+Question 3
+The Kafka server side is a cluster with many associated servers. What are the associated servers called?
+Brokers
+
+Question 4
+Which of the following Kafka main features provides consumption without a deadline?
+Permanent persistency
+
+Question 5
+Which of the following Kafka core components publish events into topics?
+Producers
+
+Question 6
+Which of the Kafka CLI script files manages topics?
+Kafka-topics
+
+Question 7
+Which of the following is Kafka Streams API based on?
+Computational graph
+
+Which of the following do stream processors do?
+Receives, transforms, and forwards
+
+Question 9
+Kafka Streams API is based on a computational graph called a stream processing topology. And in the topology, each node is a stream processor, while edges are the I/O streams. In this topology we find two special types of processors: What are they called? 
+Source and sink processor
+
+Question 10
+Once events are published and properly stored in topic partitions, you can create _________ to read them. 
+Consumers
