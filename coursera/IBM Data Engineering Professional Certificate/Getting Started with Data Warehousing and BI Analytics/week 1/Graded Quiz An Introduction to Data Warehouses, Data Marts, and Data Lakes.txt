@@ -1,0 +1,22 @@
+Question 1
+What is a data warehouse? Choose the best answer.
+A system that aggregates data from one or more sources into a single consistent data store to support data analytics
+
+Question 2
+What data warehouse vendors offer “on premises and cloud” services?
+IBM Db2 Warehouse
+
+What are data marts used for?
+Help end users focus only on relevant data
+
+Question 4
+What are data lake benefits? 
+Handles all types of data – unstructured, semi-structured, and structured
+
+Question 5
+What are the benefits of a data warehouse? 
+Faster business insights
+
+Question 6
+Where have we started hosting data warehouses in the last decade?
+In the cloud
