@@ -3,6 +3,7 @@ and right now I manage to learn NoSQL, Apache Spark, Hadoop Ecosystem, and Googl
 
 <details>
 <summary>Self-paced project</summary>
+
 - [To-do List](https://github.com/ersadul/ersadul/tree/main/project/FlaskAPI) - October 5, 2022
     > Make a to-do list application web-based to store data into sqlite database. Using Flask python library to handle web templating, routing, request, and ORM. 
     > Purpose of this project is to learn how REST API works and how data being generated and manipulated.
@@ -10,6 +11,7 @@ and right now I manage to learn NoSQL, Apache Spark, Hadoop Ecosystem, and Googl
 
 <details>
 <summary>Course projects</summary>
+
 - [ETL projects by CertNexus](https://github.com/ersadul/ersadul/tree/main/coursera/CertNexus%20ETL) - November 4, 2022
     > ETL project as a final project of CertNexus ETL course that perform extract data source, transform data, and load into selected format.
     > - Import data from data source like database or csv using pandas into jupyter notebook then
