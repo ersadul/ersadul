@@ -1,0 +1,6 @@
+-- Streams and Tables
+-- Stream will catch all the events / records / messages in history like form
+
+-- but, Table will represent the current state of the event. 
+--      eg. soccer scoring board(the value always change refer to its real condition) 
+
